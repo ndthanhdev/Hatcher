@@ -5,10 +5,10 @@
 */
 
 
-#include <DallasTemperature.h>
 #include <OneWire.h>
-#include <EEPROM.h>
 #include <LiquidCrystal.h>
+#include <EEPROM.h>
+#include <DallasTemperature.h>
 
 #define ONE_WIRE_BUS 10
 
@@ -25,8 +25,8 @@ struct Button
 } buttonList[numberOfButton];
 
 unsigned long time = 0;
-int debounce_count = 10;
-const unsigned int hold_time_limit = 150;
+int debounce_count = 4;
+const unsigned int hold_time_limit = 130;
 const unsigned int hold_time_step = 20;
 
 int current_status = 0;
@@ -42,6 +42,8 @@ float tempMax = 37.0f;
 float tempMin = 36.0f;
 float tempNow = 38.0f;
 
+unsigned int sensor_count = 0;
+unsigned int sensor_fee = 130;
 
 void changeStatus()
 {
@@ -226,13 +228,9 @@ void setup() {
 	lcd.print("xin chao");
 	delay(2500);
 }
-unsigned int sensor_count = 0;
-unsigned int display_count = 0;
-unsigned int sensor_fee = 300;
-unsigned int display_fee = 50;
-
 // the loop function runs over and over again until power down or reset
 void loop() {
+
 	getButtonsState();
 	processButton(buttonList[0], changeStatus, NULL);
 	getButtonsState();
