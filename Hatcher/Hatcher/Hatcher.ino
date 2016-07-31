@@ -43,7 +43,7 @@ float tempMin = 36.0f;
 float tempNow = 38.0f;
 
 unsigned int sensor_count = 0;
-unsigned int sensor_fee = 130;
+unsigned int sensor_fee = 100;
 
 void changeStatus()
 {
@@ -203,7 +203,7 @@ void setThermal()
 
 // the setup function runs once when you press reset or power the board
 void setup() {
-	//Serial.begin(115200);
+	Serial.begin(115200);
 
 	buttonList[0].pin = 6;
 	buttonList[1].pin = 7;
@@ -211,7 +211,7 @@ void setup() {
 
 	load();
 
-	sensors.begin();
+	sensors.begin(); sensors.setResolution(12);
 	lcd.begin(16, 2);
 
 	pinMode(RELAYhot, OUTPUT);
@@ -233,18 +233,16 @@ void loop() {
 
 	getButtonsState();
 	processButton(buttonList[0], changeStatus, NULL);
-	getButtonsState();
 	processButton(buttonList[1], decrease, decrease);
-	getButtonsState();
 	processButton(buttonList[2], increase, increase);
-	getButtonsState();
 	updateDisplay(tempMin, tempMax, tempNow, current_status);
 	getButtonsState();
 
 	if (sensor_count > sensor_fee)
 	{
-		sensors.requestTemperatures();
+		sensors.requestTemperaturesByIndex(0);
 		tempNow = sensors.getTempCByIndex(0);
+		Serial.println(tempNow);
 		setThermal();
 		sensor_count = 0;
 	}
