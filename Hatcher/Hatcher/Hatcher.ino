@@ -41,9 +41,11 @@ float tempMax = 37.0f;
 float tempMin = 36.0f;
 float tempNow = 38.0f;
 
+unsigned int lcd_count = 0;
+unsigned int lcd_fee = 9000;
 unsigned int sensor_count = 0;
-unsigned int sensor_fee = 100;
-unsigned int relay_fee = 1500;
+unsigned int sensor_fee = 200;
+unsigned int relay_fee = 1800;
 unsigned int relay_count = 0;
 
 void changeStatus()
@@ -149,7 +151,6 @@ void load()
 
 void updateDisplay(float t1, float t2, float t3, int status)
 {
-	lcd.begin(16, 2);
 	lcd.setCursor(0, 0);
 	lcd.print("cdat:");
 	lcd.setCursor(5, 0);
@@ -239,7 +240,18 @@ void loop() {
 	processButton(buttonList[0], changeStatus, NULL);
 	processButton(buttonList[1], decrease, decrease);
 	processButton(buttonList[2], increase, increase);
-	updateDisplay(tempMin, tempMax, tempNow, current_status);
+
+
+	if (lcd_count > lcd_fee)
+	{
+		lcd.begin(16, 2);
+		updateDisplay(tempMin, tempMax, tempNow, current_status);
+		lcd_count = 0;
+	}
+	else if (lcd_count % 10 == 0)
+	{
+		updateDisplay(tempMin, tempMax, tempNow, current_status);
+	}
 
 	if (sensor_count > sensor_fee)
 	{
@@ -252,7 +264,11 @@ void loop() {
 	{
 		setRelay();
 		relay_count = 0;
+		delay(1);
+		lcd.begin(16, 2);
+		updateDisplay(tempMin, tempMax, tempNow, current_status);
 	}
+	lcd_count++;
 	sensor_count++;
 	relay_count++;
 }
